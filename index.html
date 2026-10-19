@@ -27,7 +27,9 @@ footer{color:var(--muted);font-size:13px}.legend{display:flex;gap:20px;flex-wrap
 <div class="grid">
 <div class="control"><div class="top"><label for="startYear">Ano inicial</label><output class="value" id="startYearV"></output></div><select id="startYear" aria-label="Ano inicial" style="width:100%;padding:11px;margin-top:14px;border-radius:8px;background:#0b1020;color:#ecf3ff;border:1px solid #435473"><option>Carregando histórico…</option></select><div class="ends"><span>A partir de janeiro de 2020</span><span>Até o último ano com dados</span></div></div>
 <div class="control"><div class="top"><label for="pat">Patrimônio investido</label><output class="value" id="patV"></output></div><input id="pat" type="range" min="0" max="10000000" step="50000" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10 milhões</span></div><div class="pills" id="patP"></div></div>
-<div class="control"><div class="top"><label for="cdi">Rentabilidade da carteira</label><output class="value" id="cdiV"></output></div><input id="cdi" type="range" min="10" max="200" step="1" value="90"><div class="ends"><span>10% do CDI</span><span>200% do CDI</span></div><div class="pills" id="cdiP"></div></div>
+<div class="control"><div class="top"><label for="mode">Rentabilidade da carteira</label><output class="value" id="cdiV"></output></div>
+<select id="mode" aria-label="Indexador de rentabilidade" style="width:100%;padding:10px;margin-top:12px;border-radius:8px;background:#0b1020;color:#ecf3ff;border:1px solid #435473"><option value="cdi">% do CDI</option><option value="ipca">IPCA+ (taxa real anual)</option></select>
+<input id="cdi" type="range" min="10" max="200" step="1" value="90"><div class="ends"><span id="returnMin">10% do CDI</span><span id="returnMax">200% do CDI</span></div><div class="pills" id="cdiP"></div></div>
 <div class="control"><div class="top"><label for="ir">IR efetivo sobre os rendimentos</label><output class="value" id="irV"></output></div><input id="ir" type="range" min="0" max="22.5" step="0.5" value="10"><div class="ends"><span>0% — isento</span><span>22,5%</span></div></div>
 <div class="control"><div class="top"><label for="ext">Renda externa líquida mensal</label><output class="value" id="extV"></output></div><input id="ext" type="range" min="0" max="30000" step="250" value="0"><div class="ends"><span>R$ 0</span><span>R$ 30 mil</span></div><div class="pills" id="extP"></div></div>
 </div></section>
@@ -47,7 +49,7 @@ footer{color:var(--muted);font-size:13px}.legend{display:flex;gap:20px;flex-wrap
 <section class="panel"><h2>Como funciona</h2>
 <p>O sistema utiliza o CDI mensal acumulado e o IPCA mensal publicado. Para cada mês, calcula a rentabilidade bruta proporcional ao percentual escolhido do CDI, desconta o IR efetivo sobre o rendimento e deflaciona o patrimônio final pelo IPCA do próprio mês.</p>
 <p><strong>Fórmula do lucro real mensal:</strong> patrimônio × [ (1 + rendimento líquido mensal) ÷ (1 + IPCA mensal) − 1 ]. A renda total é esse lucro real mais a renda externa líquida informada.</p>
-<p>O percentual do CDI é aplicado por capitalização à taxa mensal: (1 + CDI mensal)<sup>percentual/100</sup> − 1. Isso é uma aproximação de uma carteira que acompanha uma fração do CDI; impostos, marcação a mercado, custos e datas de aplicação reais podem gerar resultados diferentes.</p>
+<p>No modo CDI, a taxa bruta é (1 + CDI mensal)<sup>percentual/100</sup> − 1. No modo IPCA+, a taxa bruta mensal é (1 + IPCA mensal) × (1 + taxa real anual)<sup>1/12</sup> − 1. Para ambas, aplica-se o IR efetivo sobre o rendimento nominal positivo; depois o lucro real é calculado descontando o IPCA mensal. Isso é uma aproximação de uma carteira que acompanha uma fração do CDI; impostos, marcação a mercado, custos e datas de aplicação reais podem gerar resultados diferentes.</p>
 <p>O patrimônio é o saldo no início de janeiro do ano escolhido, antes do aporte daquele ano; cada aporte anual entra no início de janeiro. Os aportes não são renda nem lucro. Não são simulados reinvestimentos automáticos ou retiradas. A renda externa é fixa e considerada líquida, em reais de cada mês, sem deflação adicional. A soma dos meses do período é nominalmente calculada e <strong>não</strong> equivale a um resultado anual corrigido para uma mesma data-base.</p>
 <p><strong>Fontes:</strong> <a href="https://dadosabertos.bcb.gov.br/dataset/4391-taxa-de-juros---cdi-acumulada-no-mes" target="_blank" rel="noopener noreferrer">Banco Central — CDI mensal, SGS 4391</a> e <a href="https://dadosabertos.bcb.gov.br/dataset/433-indice-nacional-de-precos-ao-consumidor-amplo-ipca" target="_blank" rel="noopener noreferrer">Banco Central — IPCA mensal, SGS 433 (fonte IBGE)</a>. O histórico é atualizado automaticamente no repositório, sujeito à disponibilidade dessas fontes.</p>
 <details><summary>Privacidade: o que acontece com os meus valores?</summary>
@@ -64,7 +66,21 @@ function presets(id,vals,labels){const box=$(id+'P');vals.forEach((v,i)=>{const 
 presets('pat',[0,1e6,2e6,4e6,6e6,1e7],['Zero','1 mi','2 mi','4 mi','6 mi','10 mi']);
 presets('cdi',[80,90,100,120,150,200],['80%','90%','100%','120%','150%','200%']);
 presets('ext',[0,3000,5000,10000,20000,30000],['Zero','3 mil','5 mil','10 mil','20 mil','30 mil']);
-ids.forEach(id=>$(id).addEventListener('input',render));$('startYear').addEventListener('change',()=>{contributionControls();render()});
+ids.forEach(id=>$(id).addEventListener('input',render));
+const lastValue={cdi:90,ipca:5};
+$('mode').addEventListener('change',()=>{
+ const mode=$('mode').value;
+ const prev=mode==='ipca'?'cdi':'ipca';
+ lastValue[prev]=Number($('cdi').value);
+ $('cdi').min=mode==='ipca'?'0':'10';$('cdi').max=mode==='ipca'?'20':'200';$('cdi').step=mode==='ipca'?'0.1':'1';
+ $('cdi').value=lastValue[mode];
+ $('returnMin').textContent=mode==='ipca'?'0% a.a.':'10% do CDI';
+ $('returnMax').textContent=mode==='ipca'?'20% a.a.':'200% do CDI';
+ const box=$('cdiP');box.replaceChildren();
+ const vals=mode==='ipca'?[0,3,5,8,10,15,20]:[80,90,100,120,150,200];
+ vals.forEach(v=>{const b=document.createElement('button');b.type='button';b.textContent=v+(mode==='ipca'?'% a.a.':'%');b.addEventListener('click',()=>{$('cdi').value=v;render()});box.appendChild(b)});
+ render();
+});$('startYear').addEventListener('change',()=>{contributionControls();render()});
 function contributionControls(){
  const box=$('annualContributions');box.replaceChildren();
  const years=[...new Set(months.filter(m=>m.month.slice(0,4)>=String($('startYear').value)).map(m=>m.month.slice(0,4)))];
@@ -76,11 +92,11 @@ function contributionControls(){
   wrap.append(label,input);box.appendChild(wrap);
  }
 }
-function render(){const p=+$('pat').value,c=+$('cdi').value/100,ir=+$('ir').value/100,ext=+$('ext').value;
-$('patV').textContent=fmt(p);$('cdiV').textContent=pct(c*100);$('irV').textContent=pct(ir*100);$('extV').textContent=fmt(ext);
+function render(){const p=+$('pat').value,c=+$('cdi').value/100,mode=$('mode').value,ir=+$('ir').value/100,ext=+$('ext').value;
+$('patV').textContent=fmt(p);$('cdiV').textContent=mode==='ipca'?pct(c*100)+' a.a. sobre IPCA':pct(c*100)+' do CDI';$('irV').textContent=pct(ir*100);$('extV').textContent=fmt(ext);
 if(!months.length)return;
 $('startYearV').textContent=$('startYear').value;selectedMonths=months.filter(m=>m.month.slice(0,4)>=String($('startYear').value));if(!selectedMonths.length)return;
-let base=p;calculated=selectedMonths.map((m,index)=>{const year=m.month.slice(0,4);const firstInYear=index===0||m.month.slice(0,4)!==selectedMonths[index-1].month.slice(0,4);const aporte=firstInYear?(aportes[year]||0):0;base+=aporte;const gross=Math.pow(1+m.cdi/100,c)-1,net=gross*(1-ir),nom=base*net,real=base*((1+net)/(1+m.ipca/100)-1);return {...m,aporte,base,nom,real,ext,total:real+ext}});
+let base=p;calculated=selectedMonths.map((m,index)=>{const year=m.month.slice(0,4);const firstInYear=index===0||m.month.slice(0,4)!==selectedMonths[index-1].month.slice(0,4);const aporte=firstInYear?(aportes[year]||0):0;base+=aporte;const gross=mode==='ipca'?(1+m.ipca/100)*Math.pow(1+c,1/12)-1:Math.pow(1+m.cdi/100,c)-1,net=gross>0?gross*(1-ir):gross,nom=base*net,real=base*((1+net)/(1+m.ipca/100)-1);return {...m,aporte,base,nom,real,ext,total:real+ext}});
 const avg=k=>calculated.reduce((s,m)=>s+m[k],0)/calculated.length;
 $('avg').textContent=fmt(avg('total'));$('realavg').textContent=fmt(avg('real'));$('last').textContent=fmt(calculated[calculated.length-1].total);$('sum').textContent=fmt(calculated.reduce((s,m)=>s+m.total,0));$('sumContributions').textContent=fmt(calculated.reduce((s,m)=>s+m.aporte,0));$('finalPat').textContent=fmt(calculated[calculated.length-1].base);
 $('rows').replaceChildren(...calculated.map(m=>{const tr=document.createElement('tr');[m.label,pct(m.cdi),pct(m.ipca),fmt(m.aporte),fmt(m.base),fmt(m.nom),fmt(m.real),fmt(m.ext),fmt(m.total)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});return tr}));
