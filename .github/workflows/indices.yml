@@ -1,5 +1,10 @@
 name: Atualizar CDI e IPCA
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_indices.py'
+      - '.github/workflows/indices.yml'
   schedule:
     - cron: '17 12 * * *'
   workflow_dispatch:
