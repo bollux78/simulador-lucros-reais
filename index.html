@@ -3,24 +3,25 @@
 <meta name="description" content="Simulador privado no navegador de lucros reais mensais com CDI e IPCA oficiais.">
 <title>Simulador de Lucros Reais</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1020;--panel:#151e32;--line:#2c3952;--text:#ecf3ff;--muted:#aab9d0;--accent:#60c6af;--blue:#77a7f2}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,sans-serif}
-main{max-width:1100px;margin:auto;padding:30px 18px 70px}h1{font-size:clamp(27px,4vw,43px);margin:0}h2{font-size:21px;margin:0 0 15px}p{color:var(--muted)}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151e32;--line:#2c3952;--text:#ecf3ff;--muted:#aab9d0;--accent:#60c6af;--blue:#77a7f2;--font-scale:1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:calc(16px * var(--font-scale))/1.5 system-ui,-apple-system,sans-serif}
+main{max-width:1100px;margin:auto;padding:30px 18px 70px}h1{font-size:calc(clamp(27px,4vw,43px) * var(--font-scale));margin:0}h2{font-size:calc(21px * var(--font-scale));margin:0 0 15px}p{color:var(--muted)}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:calc(12px * var(--font-scale))}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin:20px 0}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.control{padding:14px;border:1px solid var(--line);border-radius:12px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.value{font-size:clamp(18px,2.6vw,26px);font-weight:750;color:var(--accent)}
-input[type=range]{width:100%;accent-color:var(--accent);margin:15px 0 5px}.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.value{font-size:calc(clamp(18px,2.6vw,26px) * var(--font-scale));font-weight:750;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:15px 0 5px}.ends{display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));color:var(--muted)}
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}button{background:#273650;color:var(--text);border:1px solid #435473;border-radius:8px;padding:7px 10px;cursor:pointer}
 button:hover,button:focus-visible{border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent)}
-.stat{border-radius:12px;background:#1c2940;padding:17px}.stat strong{font-size:clamp(22px,3vw,32px);display:block;overflow-wrap:anywhere}
+.stat{border-radius:12px;background:#1c2940;padding:17px}.stat strong{font-size:calc(clamp(22px,3vw,32px) * var(--font-scale));display:block;overflow-wrap:anywhere}
 .muted,small{color:var(--muted)}.notice{border-left:3px solid var(--accent);padding:9px 14px;background:#14283a}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-size:calc(13px * var(--font-scale))}
 .scroll{overflow-x:auto}svg{width:100%;height:auto;display:block}a{color:#9bd5ff}details{margin-top:12px}summary{cursor:pointer;font-weight:600}
-footer{color:var(--muted);font-size:13px}.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
-.aporte-item{padding:12px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}.aporte-item label{font-weight:600}.aporte-item input{background:#0b1020;color:var(--text);border:1px solid #435473;padding:9px;border-radius:8px;width:180px;max-width:60%;font:inherit}.aporte-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}.aporte-expl{font-size:13px;color:var(--muted)}@media(max-width:520px){.aporte-grid{grid-template-columns:1fr}}
+footer{color:var(--muted);font-size:calc(13px * var(--font-scale))}.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:calc(13px * var(--font-scale));color:var(--muted)}
+.aporte-item{padding:12px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}.aporte-item label{font-weight:600}.aporte-item input{background:#0b1020;color:var(--text);border:1px solid #435473;padding:9px;border-radius:8px;width:180px;max-width:60%;font:inherit}.aporte-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}.aporte-expl{font-size:calc(13px * var(--font-scale));color:var(--muted)}@media(max-width:520px){.aporte-grid{grid-template-columns:1fr}}
 .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;background:var(--accent)}
-@media(max-width:720px){.grid{grid-template-columns:1fr}.panel{padding:16px}.top{align-items:flex-start;flex-wrap:wrap}th,td{padding:9px 6px;font-size:13px}}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.panel{padding:16px}.top{align-items:flex-start;flex-wrap:wrap}th,td{padding:9px 6px;font-size:calc(13px * var(--font-scale))}}
 </style></head><body><main>
+<div class="font-toolbar" style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:10px"><label for="fontSize">Tamanho da fonte</label><input id="fontSize" type="range" min="75" max="150" step="5" value="100" aria-label="Tamanho global da fonte" style="width:150px;margin:0"><output id="fontSizeV">100%</output><button type="button" id="fontReset">Padrão</button></div>
 <header><div class="eyebrow">Finanças • cálculo local e privado</div><h1>Simulador de Lucros Reais</h1>
 <p>Descubra quanto seus investimentos teriam rendido acima da inflação, após IR, mês a mês, usando CDI e IPCA oficiais.</p></header>
 <section class="panel"><div class="top"><h2>Parâmetros da simulação</h2><span class="muted">Os valores começam em zero</span></div>
@@ -62,7 +63,8 @@ footer{color:var(--muted);font-size:13px}.legend{display:flex;gap:20px;flex-wrap
 'use strict';
 const $=id=>document.getElementById(id), BRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}), PCT=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmt=v=>BRL.format(v), pct=v=>PCT.format(v)+'%';
-const ids=['pat','cdi','ir','ext','gasto'];let months=[],calculated=[];const aportes=Object.create(null);let selectedMonths=[];
+const ids=['pat','cdi','ir','ext','gasto'];
+const fontSize=$('fontSize');function updateFont(){document.documentElement.style.setProperty('--font-scale',String(Number(fontSize.value)/100));$('fontSizeV').textContent=fontSize.value+'%'}fontSize.addEventListener('input',updateFont);$('fontReset').addEventListener('click',()=>{fontSize.value=100;updateFont()});updateFont();let months=[],calculated=[];const aportes=Object.create(null);let selectedMonths=[];
 function presets(id,vals,labels){const box=$(id+'P');vals.forEach((v,i)=>{const b=document.createElement('button');b.textContent=labels[i];b.type='button';b.onclick=()=>{$(id).value=v;render()};box.appendChild(b)})}
 presets('pat',[0,1e6,2e6,4e6,6e6,1e7],['Zero','1 mi','2 mi','4 mi','6 mi','10 mi']);
 presets('cdi',[80,90,100,120,150,200],['80%','90%','100%','120%','150%','200%']);
