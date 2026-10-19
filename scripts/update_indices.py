@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Atualiza 12 meses completos com séries oficiais SGS 4391 (CDI) e 433 (IPCA)."""
+"""Atualiza histórico mensal desde janeiro de 2020 com séries SGS 4391 (CDI) e 433 (IPCA)."""
 import datetime as dt
 import json
 import pathlib
@@ -10,7 +10,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "indices.json"
 TODAY = dt.date.today()
-START = TODAY.replace(day=1) - dt.timedelta(days=480)
+START = dt.date(2020, 1, 1)
 
 def read_series(code):
     base = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{code}/dados"
@@ -37,28 +37,17 @@ def read_series(code):
 
 def main():
     cdi, ipca = read_series(4391), read_series(433)
-    # Somente meses encerrados; não incluir mês atual ainda incompleto.
-    previous = TODAY.replace(day=1) - dt.timedelta(days=1)
-    keys = []
-    for i in range(11, -1, -1):
-        year = previous.year
-        month = previous.month - i
-        while month <= 0:
-            month += 12
-            year -= 1
-        keys.append(f"{year:04d}-{month:02d}")
-    # CDI e IPCA devem existir para cada mês, inclusive o mais recente.
-    # Se o IPCA ainda não tiver sido publicado, recuar o período.
-    common = sorted(k for k in set(cdi) & set(ipca) if k < TODAY.strftime("%Y-%m"))
-    if len(common) < 12:
-        raise RuntimeError("Menos de 12 meses completos de CDI e IPCA; manter dados anteriores.")
-    keys = common[-12:]
-    # Verifica continuidade para evitar lacunas silenciosas.
+    # Interseção de CDI e IPCA: só meses completos, a partir de janeiro/2020.
+    common = sorted(k for k in set(cdi) & set(ipca)
+                    if "2020-01" <= k < TODAY.strftime("%Y-%m"))
+    if len(common) < 12 or common[0] != "2020-01":
+        raise RuntimeError("Histórico oficial incompleto desde janeiro de 2020.")
+    keys = common
     for a, b in zip(keys, keys[1:]):
         y, m = map(int, a.split("-"))
         expected = f"{y+1:04d}-01" if m == 12 else f"{y:04d}-{m+1:02d}"
         if b != expected:
-            raise RuntimeError("Lacuna nos índices mensais oficiais.")
+            raise RuntimeError(f"Lacuna nos índices mensais oficiais: {a} -> {b}")
     data = {
         "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "sources": {"cdi": "BCB SGS 4391", "ipca": "BCB SGS 433"},
