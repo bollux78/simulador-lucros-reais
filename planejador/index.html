@@ -13,7 +13,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:17px 0 5px}.ends{
 .bar{height:20px;display:flex;overflow:hidden;border-radius:7px;background:#354158;gap:2px;margin:18px 0}.bar>span{height:100%;transition:width .12s}
 .legendline{padding:7px 0;border-bottom:1px solid var(--line)}.legendline:last-child{border:0}.dot{width:11px;height:11px;display:inline-block;border-radius:3px;margin-right:9px}
 button{background:#273650;color:var(--text);border:1px solid #435473;border-radius:9px;padding:10px 14px;cursor:pointer;font:inherit;margin-top:16px}
-input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.control:has(input:disabled){opacity:.65}select{background:#273650;color:var(--text);border:1px solid #435473;border-radius:8px;padding:8px;font:inherit}details>summary{cursor:pointer;font-size:20px;font-weight:700} .advanced-help{font-size:13px;line-height:1.5;margin:7px 0;color:var(--muted)}
+input:disabled,select:disabled{opacity:.45;cursor:not-allowed}.control:has(input:disabled){opacity:.65}select{background:#273650;color:var(--text);border:1px solid #435473;border-radius:8px;padding:8px;font:inherit}details>summary{cursor:pointer;font-size:20px;font-weight:700} #grupoDespesas>summary{list-style:none}#grupoDespesas>summary::-webkit-details-marker{display:none}#grupoDespesas>summary>span:first-child::before{content:"\25B6";display:inline-block;margin-right:9px;font-size:13px;color:var(--accent);transition:transform .15s}#grupoDespesas[open]>summary>span:first-child::before{transform:rotate(90deg)} .advanced-help{font-size:13px;line-height:1.5;margin:7px 0;color:var(--muted)}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:right;font-variant-numeric:tabular-nums}th,td{padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th:first-child,td:first-child{text-align:left}thead th{font-size:13px;color:var(--muted)}
 .note{border-left:3px solid var(--accent);padding:8px 14px;background:#14283a;font-size:14px}
@@ -131,6 +131,7 @@ ids.forEach(id=>el(id).addEventListener('input',alterar));
 advancedIds.forEach(id=>el(id).addEventListener('input',alterar));el('usarAvancado').addEventListener('change',alterar);el('modelo').addEventListener('change',alterar);
 el('reset').addEventListener('click',()=>{ids.forEach((id,i)=>el(id).value=initial[i]);advancedIds.forEach((id,i)=>el(id).value=advancedInitial[i]);el('usarAvancado').checked=false;el('modelo').value='real';alterar()});restaurarValores();update();
 </script></body></html>
+
 
 
 
