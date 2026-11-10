@@ -25,10 +25,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <div class="stat"><span class="muted">Gastos adicionais mensais</span><strong id="total">R$ 4.400</strong></div>
 <div class="stat"><span class="muted">Valor que ainda sobraria</span><strong id="restante" style="color:var(--accent)">R$ 5.600</strong></div>
 </div><div class="bar" role="img" id="barra" aria-label="Distribuição percentual do orçamento">
-<span id="bviagens" style="background:#0d9488"></span><span id="bcarros" style="background:#d97706"></span><span id="bcasa" style="background:#64748b"></span><span id="bdespesas" style="background:#a78bfa"></span><span id="bsaldo" style="background:#354158"></span></div>
+<span id="bviagens" style="background:#0d9488"></span><span id="bdespesas" style="background:#a78bfa"></span><span id="bsaldo" style="background:#354158"></span></div>
 <div class="legendline"><span><i class="dot" style="background:#0d9488"></i>Viagens</span><strong id="pviagens"></strong></div>
-<div class="legendline"><span><i class="dot" style="background:#d97706"></i>Carros</span><strong id="pcarros"></strong></div>
-<div class="legendline"><span><i class="dot" style="background:#64748b"></i>Casa</span><strong id="pcasa"></strong></div>
 <div class="legendline"><span><i class="dot" style="background:#a78bfa"></i>Despesas mensais</span><strong id="pdespesas"></strong></div>
 <div class="legendline"><span><i class="dot" style="background:#354158"></i>Saldo preservado</span><strong id="psaldo"></strong></div>
 </section>
@@ -36,9 +34,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <div class="control"><div class="top"><label for="renda">Renda adicional mensal</label><output id="vrenda"></output></div><input id="renda" type="range" min="0" max="90000" step="250" value="10000"><div class="ends"><span>R$ 0</span><span>R$ 90.000</span></div></div>
 <div class="control"><div class="top"><label for="qtd">Viagens por mês</label><output id="vqtd"></output></div><input id="qtd" type="range" min="0" max="15" step="1" value="4"><div class="ends"><span>0</span><span>15</span></div></div>
 <div class="control"><div class="top"><label for="viagem">Custo médio por viagem</label><output id="vviagem"></output></div><input id="viagem" type="range" min="700" max="10000" step="50" value="800"><div class="ends"><span>R$ 700</span><span>R$ 10.000</span></div></div>
-<div class="control"><div class="top"><label for="carros">Adicional para os carros</label><output id="vcarros"></output></div><input id="carros" type="range" min="0" max="4500" step="100" value="500"><div class="ends"><span>R$ 0</span><span>R$ 4.500</span></div></div>
-<div class="control"><div class="top"><label for="casa">Adicional para a casa</label><output id="vcasa"></output></div><input id="casa" type="range" min="0" max="4500" step="100" value="700"><div class="ends"><span>R$ 0</span><span>R$ 4.500</span></div></div>
-<div class="control"><div class="top"><label for="despesas">Despesas mensais</label><output id="vdespesas"></output></div><input id="despesas" type="range" min="0" max="10000" step="100" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10.000</span></div></div>
+<details class="control" id="grupoDespesas"><summary class="top"><span>Despesas mensais</span><output id="vdespesas">R$ 0</output></summary><p class="advanced-help">Total dos itens abaixo.</p><div class="control"><div class="top"><label for="contas">Contas</label><output id="vcontas"></output></div><input id="contas" type="range" min="0" max="10000" step="100" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10.000</span></div></div><div class="control"><div class="top"><label for="mercado">Mercado</label><output id="vmercado"></output></div><input id="mercado" type="range" min="0" max="10000" step="100" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10.000</span></div></div><div class="control"><div class="top"><label for="saude">Saúde</label><output id="vsaude"></output></div><input id="saude" type="range" min="0" max="10000" step="100" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10.000</span></div></div><div class="control"><div class="top"><label for="lazer">Lazer</label><output id="vlazer"></output></div><input id="lazer" type="range" min="0" max="10000" step="100" value="0"><div class="ends"><span>R$ 0</span><span>R$ 10.000</span></div></div><div class="control"><div class="top"><label for="casa">Adicional para a casa</label><output id="vcasa"></output></div><input id="casa" type="range" min="0" max="4500" step="100" value="700"><div class="ends"><span>R$ 0</span><span>R$ 4.500</span></div></div><div class="control"><div class="top"><label for="carros">Adicional para os carros</label><output id="vcarros"></output></div><input id="carros" type="range" min="0" max="4500" step="100" value="500"><div class="ends"><span>R$ 0</span><span>R$ 4.500</span></div></div></details>
 <button id="reset" type="button">Restaurar cenário inicial</button></section>
 <section class="panel"><details id="avancado"><summary>Avançado <span class="muted" style="font-size:13px;font-weight:400">opcional</span></summary>
 <p>Calcule a renda mensal real a partir de um patrimônio, da rentabilidade esperada e do custo da assessoria.</p>
@@ -60,20 +56,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <p class="advanced-help">Não desconta os gastos planejados acima: a simulação reinveste todo o lucro. Taxas e rebate permanecem constantes; o fee e a vantagem adicional incidem sobre todo o patrimônio. Lucro real anual = crescimento no ano, em valores de hoje. Diferença patrimonial = com fee menos sem fee.</p></div></section>
 <p class="note">Esta ferramenta distribui valores hipotéticos informados por você. Não estima nem garante rentabilidade de investimentos, impostos ou disponibilidade de caixa. Se os gastos superarem a renda adicional, o saldo aparecerá negativo.</p>
 </main><script>
-const ids=['renda','qtd','viagem','carros','casa','despesas'];const initial=[10000,4,800,500,700,0];const el=id=>document.getElementById(id);
+const ids=['renda','qtd','viagem','contas','mercado','saude','lazer','casa','carros'];const initial=[10000,4,800,0,0,0,0,700,500];const el=id=>document.getElementById(id);
 const money=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
 function update(){
-const [manual,q,v,c,h,d]=ids.map(id=>+el(id).value); const r=atualizarAvancado(manual);const travels=q*v;const spent=travels+c+h+d;const left=r-spent;
+const [manual,q,v,contas,mercado,saude,lazer,casa,carros]=ids.map(id=>+el(id).value); const r=atualizarAvancado(manual);const travels=q*v;const despesas=contas+mercado+saude+lazer+casa+carros;const spent=travels+despesas;const left=r-spent;el('vdespesas').textContent=money(despesas);
 ids.forEach((id,i)=>el('v'+id).textContent=id==='qtd'?q:money(id==='renda'?r:+el(id).value));el('renda').disabled=el('usarAvancado').checked;
 el('total').textContent=money(spent);el('restante').textContent=money(left);
 el('restante').style.color=left<0?'#ff9c9c':'var(--accent)';
 el('anogasto').textContent=money(spent*12);el('anosaldo').textContent=money(left*12);
-const parts=[travels,c,h,d,Math.max(0,left)];const denom=Math.max(r,spent,1);
-['viagens','carros','casa','despesas','saldo'].forEach((id,i)=>{
+const parts=[travels,despesas,Math.max(0,left)];const denom=Math.max(r,spent,1);
+['viagens','despesas','saldo'].forEach((id,i)=>{
 el('b'+id).style.width=(100*parts[i]/denom)+'%';
-el('p'+id).textContent=(r?100*(i===4?left:parts[i])/r:0).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+el('p'+id).textContent=(r?100*(i===2?left:parts[i])/r:0).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
 });
-el('barra').setAttribute('aria-label','Viagens '+money(travels)+', carros '+money(c)+', casa '+money(h)+', despesas '+money(d)+', saldo '+money(left));
+el('barra').setAttribute('aria-label','Viagens '+money(travels)+', despesas mensais '+money(despesas)+', saldo '+money(left));
 }
 const advancedIds=['patrimonio','real','pctCdi','cdi','inflacao','fee','melhora','rebate'];
 const advancedInitial=[1000000,6,85,13.6,4.5,0,0,0];
@@ -110,6 +106,7 @@ ids.forEach(id=>el(id).addEventListener('input',update));
 advancedIds.forEach(id=>el(id).addEventListener('input',update));el('usarAvancado').addEventListener('change',update);el('modelo').addEventListener('change',update);
 el('reset').addEventListener('click',()=>{ids.forEach((id,i)=>el(id).value=initial[i]);advancedIds.forEach((id,i)=>el(id).value=advancedInitial[i]);el('usarAvancado').checked=false;el('modelo').value='real';update()});update();
 </script></body></html>
+
 
 
 
