@@ -54,8 +54,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <section class="panel"><h2 style="margin-top:0">Projeção anual</h2><div class="grid"><div class="stat"><span class="muted">Gastos adicionais em 12 meses</span><strong id="anogasto"></strong></div><div class="stat"><span class="muted">Saldo preservado em 12 meses</span><strong id="anosaldo"></strong></div></div></section>
 <section class="panel" aria-labelledby="tituloPatrimonio"><h2 id="tituloPatrimonio" style="margin-top:0">Patrimônio futuro</h2>
 <p id="avisoProjecao">Ative o cálculo na seção Avançado para ver a projeção de um a cinco anos.</p>
-<div id="tabelaProjecao" hidden><p>Estimativa em valores de hoje, com os rendimentos reinvestidos.</p><div class="table-scroll"><table><thead><tr><th scope="col">Ano</th><th scope="col">Sem fee</th><th scope="col">Com fee</th><th scope="col">Diferença</th></tr></thead><tbody id="linhasProjecao"></tbody></table></div>
-<p class="advanced-help">Não desconta os gastos planejados acima: a simulação reinveste todo o lucro. Taxas e rebate permanecem constantes; o fee e a vantagem adicional incidem sobre todo o patrimônio. Diferença = com fee menos sem fee.</p></div></section>
+<div id="tabelaProjecao" hidden><p>Estimativa em valores de hoje, com os rendimentos reinvestidos.</p><div class="table-scroll"><table><thead><tr><th scope="col">Ano</th><th scope="col">Patrimônio sem fee</th><th scope="col">Lucro real anual sem fee</th><th scope="col">Patrimônio com fee</th><th scope="col">Lucro real anual com fee</th><th scope="col">Diferença patrimonial</th></tr></thead><tbody id="linhasProjecao"></tbody></table></div>
+<p class="advanced-help">Não desconta os gastos planejados acima: a simulação reinveste todo o lucro. Taxas e rebate permanecem constantes; o fee e a vantagem adicional incidem sobre todo o patrimônio. Lucro real anual = crescimento no ano, em valores de hoje. Diferença patrimonial = com fee menos sem fee.</p></div></section>
 <p class="note">Esta ferramenta distribui valores hipotéticos informados por você. Não estima nem garante rentabilidade de investimentos, impostos ou disponibilidade de caixa. Se os gastos superarem a renda adicional, o saldo aparecerá negativo.</p>
 </main><script>
 const ids=['renda','qtd','viagem','carros','casa'];const initial=[10000,4,800,500,700];const el=id=>document.getElementById(id);
@@ -95,8 +95,9 @@ function atualizarAvancado(manual){
  if(ativo){
   for(let ano=1;ano<=5;ano++){
    const sem=patrimonio*Math.pow(1+base,ano),com=patrimonio*Math.pow(1+ganhoAnual,ano);
+   const lucroSem=sem-patrimonio*Math.pow(1+base,ano-1);const lucroCom=com-patrimonio*Math.pow(1+ganhoAnual,ano-1);
    const linha=document.createElement('tr');
-   for(const valor of [String(ano),money(sem),money(com),money(com-sem)]){const celula=document.createElement('td');celula.textContent=valor;linha.appendChild(celula)}
+   for(const valor of [String(ano),money(sem),money(lucroSem),money(com),money(lucroCom),money(com-sem)]){const celula=document.createElement('td');celula.textContent=valor;linha.appendChild(celula)}
    linhas.appendChild(linha);
   }
  }
@@ -107,4 +108,5 @@ ids.forEach(id=>el(id).addEventListener('input',update));
 advancedIds.forEach(id=>el(id).addEventListener('input',update));el('usarAvancado').addEventListener('change',update);el('modelo').addEventListener('change',update);
 el('reset').addEventListener('click',()=>{ids.forEach((id,i)=>el(id).value=initial[i]);advancedIds.forEach((id,i)=>el(id).value=advancedInitial[i]);el('usarAvancado').checked=false;el('modelo').value='real';update()});update();
 </script></body></html>
+
 
